@@ -5,24 +5,32 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
-import Box from '@material-ui/core/Box';
+
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
+
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import { mainListItems, secondaryListItems } from './listItems.js';
-import Orders from './Orders';
+
+// import { mainListItems } from './listItems.js';
+import FilterList from './FilterList';
+import RenderMap from './RenderMap';
+import NewRenderMap from './NewRenderMap';
 
 const drawerWidth = 240;
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#424242',
+    },
+  },
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -103,104 +111,144 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Map = () => {
+const Map = ({ filter, search }) => {
+  const { radius, rate } = filter;
+  const { coords } = search;
+  const curLocation = { lat: coords.latitude, lng: coords.longitude };
+
+  // material ui states
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+  const api_key = process.env.REACT_APP_API_KEY;
+  const url = `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${api_key}`;
+
+  // append google api script to body
+  // [*Note] Doing this will make google a window object
+  // function appendScript() {
+  //   const script = document.createElement('script');
+  //   const api_key = process.env.REACT_APP_API_KEY;
+  //   script.src = `https://maps.googleapis.com/maps/api/js?key=${api_key}&callback=initializeMap`;
+  //   script.async = true;
+  //   script.defer = true;
+  //   script.id = 'google-script';
+  //   document.body.appendChild(script);
+  // }
+
+  // DOM update - append api script to body & create window method after render
+  // useEffect(() => {
+  //   appendScript();
+
+  //   // callback=initialize from script src is looking for a function in window
+  //   // word aroound -> create a window method ("global function")
+  //   window.initializeMap = () => {
+  //     var latlng = new window.google.maps.LatLng(
+  //       coords.latitude,
+  //       coords.longitude
+  //     );
+  //     var myOptions = {
+  //       zoom: 5,
+  //       center: latlng,
+  //       mapTypeId: window.google.maps.MapTypeId.ROADMAP,
+  //     };
+  //     var map = new window.google.maps.Map(
+  //       document.getElementById('map'),
+  //       myOptions
+  //     );
+  //     var marker = new window.google.maps.Marker({
+  //       position: latlng,
+  //       map,
+  //       animation: window.google.maps.Animation.BOUNCE,
+  //     });
+  //     marker.setMap(map);
+  //   };
+  // }, []);
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar
-        position='absolute'
-        className={clsx(classes.appBar, open && classes.appBarShift)}
-      >
-        <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge='start'
-            color='inherit'
-            aria-label='open drawer'
-            onClick={handleDrawerOpen}
-            className={clsx(
-              classes.menuButton,
-              open && classes.menuButtonHidden
-            )}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            component='h1'
-            variant='h6'
-            color='inherit'
-            noWrap
-            className={classes.title}
-          >
-            Dashboard
-          </Typography>
-          <IconButton color='inherit'>
-            <Badge badgeContent={4} color='secondary'>
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        variant='permanent'
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-        }}
-        open={open}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List>{mainListItems}</List>
-        <Divider />
-        <List>{secondaryListItems}</List>
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth='lg' className={classes.container}>
-          <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}></Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}></Paper>
-            </Grid>
-            {/* Recent Orders */}
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <Orders />
-              </Paper>
-            </Grid>
-          </Grid>
-          <Box pt={4}></Box>
-        </Container>
-      </main>
-    </div>
+    <ThemeProvider theme={theme}>
+      <div className={classes.root}>
+        <CssBaseline />
+        {/* App bar */}
+        <AppBar
+          position='absolute'
+          className={clsx(classes.appBar, open && classes.appBarShift)}
+        >
+          <Toolbar className={classes.toolbar}>
+            <IconButton
+              edge='start'
+              color='inherit'
+              aria-label='open drawer'
+              onClick={handleDrawerOpen}
+              className={clsx(
+                classes.menuButton,
+                open && classes.menuButtonHidden
+              )}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              component='h1'
+              variant='h6'
+              color='inherit'
+              noWrap
+              className={classes.title}
+            >
+              Findr
+            </Typography>
+          </Toolbar>
+        </AppBar>
+
+        {/* Filter Drawer - building in FilterList */}
+        <Drawer
+          variant='permanent'
+          classes={{
+            paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+          }}
+          open={open}
+        >
+          <div className={classes.toolbarIcon}>
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </div>
+
+          <Divider />
+          {/* Change mainListItems to a menu component */}
+          {/* <List>{mainListItems}</List>*/}
+
+          <FilterList />
+        </Drawer>
+
+        {/* Map display here */}
+        <main className={classes.content}>
+          <div id='map'></div>
+          <RenderMap
+            googleMapURL={url}
+            loadingElement={<div style={{ height: `100%` }} />}
+            containerElement={<div style={{ height: `100%` }} />}
+            mapElement={<div style={{ height: `100%` }} />}
+            center={curLocation}
+          />
+        </main>
+      </div>
+    </ThemeProvider>
   );
 };
 
 Map.propTypes = {
+  filter: PropTypes.object.isRequired,
   search: PropTypes.object.isRequired,
 };
 
-function mapStateToProps(state) {
-  return {
-    search: state.search,
-  };
-}
+const mapStateToProps = (state) => ({
+  filter: state.filter,
+  search: state.search,
+});
 
 export default connect(mapStateToProps)(Map);

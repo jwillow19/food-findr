@@ -1,6 +1,6 @@
 import { SEARCH_CUR, SEARCH_REMOTE } from '../actions/types';
 
-export const setLocation = () => async (dispatch) => {
+export const setLocation = () => (dispatch) => {
   const { geolocation } = navigator;
 
   const showError = (error) => {
@@ -33,9 +33,9 @@ export const setLocation = () => async (dispatch) => {
   });
 
   geolocation.getCurrentPosition((position) => {
-    console.log(position);
+    // console.log(position);
     const posObj = geopositionToObject(position);
-    console.log(posObj);
+    // console.log(posObj);
     dispatch({
       type: SEARCH_CUR,
       payload: posObj.coords,

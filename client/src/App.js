@@ -6,7 +6,6 @@ import Home from './components/Home';
 import Navbar from './components/Navbar';
 import Map from './components/dashboard/Map';
 import Alert from './components/Alert';
-import SearchRoute from './components/routing/SearchRoute';
 import './App.css';
 
 function App() {
@@ -20,7 +19,7 @@ function App() {
           <section className='container'>
             <Alert />
             <Switch>
-              <SearchRoute exact path='/map' component={Map} />
+              <Route exact path='/map' component={Map} />
             </Switch>
           </section>
         </Fragment>
