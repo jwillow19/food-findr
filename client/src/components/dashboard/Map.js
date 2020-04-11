@@ -20,7 +20,6 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 // import { mainListItems } from './listItems.js';
 import FilterList from './FilterList';
 import RenderMap from './RenderMap';
-import NewRenderMap from './NewRenderMap';
 
 const drawerWidth = 240;
 
@@ -126,8 +125,8 @@ const Map = ({ filter, search }) => {
     setOpen(false);
   };
 
-  const api_key = process.env.REACT_APP_API_KEY;
-  const url = `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${api_key}`;
+  // const api_key = process.env.REACT_APP_API_KEY;
+  // const url = `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${api_key}`;
 
   // append google api script to body
   // [*Note] Doing this will make google a window object
@@ -227,14 +226,7 @@ const Map = ({ filter, search }) => {
 
         {/* Map display here */}
         <main className={classes.content}>
-          <div id='map'></div>
-          <RenderMap
-            googleMapURL={url}
-            loadingElement={<div style={{ height: `100%` }} />}
-            containerElement={<div style={{ height: `100%` }} />}
-            mapElement={<div style={{ height: `100%` }} />}
-            center={curLocation}
-          />
+          <RenderMap />
         </main>
       </div>
     </ThemeProvider>
