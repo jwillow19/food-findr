@@ -70,12 +70,13 @@
   position: absolute;
   right: 5px;
   top: 60%;
-  margin-top: -195px;
+  margin-top: -395px;
   height: 330px;
   width: 200px;
   padding: 5px;
   z-index: 5;
-  border: 1px solid #999;
+  border: 1px solid #424242;
+  border-radius: 10px;
   background: #fff;
 }
 h2 {

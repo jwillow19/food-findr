@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { loadLocation } from '../../actions/search';
 
-var scriptAppend = false;
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 // Add GoogleScipt in body tag - run after render
 function appendScript() {
   const script = document.createElement('script');
@@ -13,7 +14,6 @@ function appendScript() {
   script.defer = true;
   script.id = 'google-script';
   document.body.appendChild(script);
-  scriptAppend = true;
 }
 
 const RenderMap = ({ filter, search }) => {
@@ -100,21 +100,19 @@ const RenderMap = ({ filter, search }) => {
 
     // search nearby places
     var request = {
-      // query: 'Museum of Contemporary Art Australia',
       location: curLocation,
       radius: filter.radius * 1000,
-      // locationBias: { radius: radius * 1000, center: curLocation },
       fields: ['name', 'geometry'],
       type: ['restaurant'],
     };
 
     var service = new window.google.maps.places.PlacesService(map);
 
+    // show-more button
     var getNextPage = null;
     var moreButton = document.getElementById('more');
     moreButton.onclick = function () {
       moreButton.disabled = true;
-      debugger;
       if (getNextPage) getNextPage();
     };
 
@@ -126,6 +124,9 @@ const RenderMap = ({ filter, search }) => {
         infowindow.open(map, pMarker);
       };
     }
+
+    // Clear content in placeList everytime page rerender so list doesn't stack
+    document.getElementById('places').innerHTML = '';
 
     service.nearbySearch(request, (results, status, pagination) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
@@ -205,9 +206,13 @@ const RenderMap = ({ filter, search }) => {
     <Fragment>
       <div id='map' ref={mapRef} style={{ height: '100%' }}></div>
       <div id='right-panel'>
-        <h2>Results</h2>
+        <Typography component='h1' variant='h6' color='inherit' noWrap>
+          Results
+        </Typography>
         <ul id='places'></ul>
-        <button id='more'>More results</button>
+        <Button variant='contained' color='primary' id='more'>
+          More results
+        </Button>
       </div>
     </Fragment>
   );
