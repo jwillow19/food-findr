@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import store from './store';
@@ -8,7 +8,13 @@ import Map from './components/dashboard/Map';
 import Alert from './components/Alert';
 import './App.css';
 
+import { loadLocation } from './actions/search';
+
 function App() {
+  // grabs localStorage location state on refresh
+  useEffect(() => {
+    store.dispatch(loadLocation());
+  }, []);
   return (
     <Provider store={store}>
       <Router>

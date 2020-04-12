@@ -1,4 +1,4 @@
-import { SEARCH_CUR, SEARCH_REMOTE } from '../actions/types';
+import { SEARCH_CUR, LOCATION_LOADED, SEARCH_ERR } from '../actions/types';
 
 export const setLocation = () => (dispatch) => {
   const { geolocation } = navigator;
@@ -41,4 +41,21 @@ export const setLocation = () => (dispatch) => {
       payload: posObj.coords,
     });
   }, showError);
+};
+
+// @action  loadLocation - retrieve location from localStorage - if any, dispatch and load to store
+// @goal    persist state, prevent crash when reload
+
+export const loadLocation = () => (dispatch) => {
+  if (localStorage.location) {
+    const location = JSON.parse(localStorage.location);
+    dispatch({
+      type: LOCATION_LOADED,
+      payload: location,
+    });
+  } else {
+    dispatch({
+      type: SEARCH_ERR,
+    });
+  }
 };

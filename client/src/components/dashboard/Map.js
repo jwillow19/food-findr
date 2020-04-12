@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -110,11 +109,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Map = ({ filter, search }) => {
-  const { radius, rate } = filter;
-  const { coords } = search;
-  const curLocation = { lat: coords.latitude, lng: coords.longitude };
-
+const Map = () => {
   // material ui states
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -124,50 +119,6 @@ const Map = ({ filter, search }) => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  // const api_key = process.env.REACT_APP_API_KEY;
-  // const url = `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${api_key}`;
-
-  // append google api script to body
-  // [*Note] Doing this will make google a window object
-  // function appendScript() {
-  //   const script = document.createElement('script');
-  //   const api_key = process.env.REACT_APP_API_KEY;
-  //   script.src = `https://maps.googleapis.com/maps/api/js?key=${api_key}&callback=initializeMap`;
-  //   script.async = true;
-  //   script.defer = true;
-  //   script.id = 'google-script';
-  //   document.body.appendChild(script);
-  // }
-
-  // DOM update - append api script to body & create window method after render
-  // useEffect(() => {
-  //   appendScript();
-
-  //   // callback=initialize from script src is looking for a function in window
-  //   // word aroound -> create a window method ("global function")
-  //   window.initializeMap = () => {
-  //     var latlng = new window.google.maps.LatLng(
-  //       coords.latitude,
-  //       coords.longitude
-  //     );
-  //     var myOptions = {
-  //       zoom: 5,
-  //       center: latlng,
-  //       mapTypeId: window.google.maps.MapTypeId.ROADMAP,
-  //     };
-  //     var map = new window.google.maps.Map(
-  //       document.getElementById('map'),
-  //       myOptions
-  //     );
-  //     var marker = new window.google.maps.Marker({
-  //       position: latlng,
-  //       map,
-  //       animation: window.google.maps.Animation.BOUNCE,
-  //     });
-  //     marker.setMap(map);
-  //   };
-  // }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -233,14 +184,4 @@ const Map = ({ filter, search }) => {
   );
 };
 
-Map.propTypes = {
-  filter: PropTypes.object.isRequired,
-  search: PropTypes.object.isRequired,
-};
-
-const mapStateToProps = (state) => ({
-  filter: state.filter,
-  search: state.search,
-});
-
-export default connect(mapStateToProps)(Map);
+export default Map;
