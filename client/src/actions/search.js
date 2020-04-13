@@ -1,4 +1,9 @@
-import { SEARCH_CUR, LOCATION_LOADED, SEARCH_ERR } from '../actions/types';
+import {
+  SEARCH_CUR,
+  SEARCH_REMOTE,
+  LOCATION_LOADED,
+  SEARCH_ERR,
+} from '../actions/types';
 
 export const setLocation = () => (dispatch) => {
   const { geolocation } = navigator;
@@ -26,9 +31,8 @@ export const setLocation = () => (dispatch) => {
   const geopositionToObject = (geoposition) => ({
     timestamp: geoposition.timestamp,
     coords: {
-      accuracy: geoposition.coords.accuracy,
-      latitude: geoposition.coords.latitude,
-      longitude: geoposition.coords.longitude,
+      lat: geoposition.coords.latitude,
+      lng: geoposition.coords.longitude,
     },
   });
 
@@ -43,9 +47,16 @@ export const setLocation = () => (dispatch) => {
   }, showError);
 };
 
+// @action  set new remote location
+export const setRemoteLocation = (location) => (dispatch) => {
+  dispatch({
+    type: SEARCH_REMOTE,
+    payload: location,
+  });
+};
+
 // @action  loadLocation - retrieve location from localStorage - if any, dispatch and load to store
 // @goal    persist state, prevent crash when reload
-
 export const loadLocation = () => (dispatch) => {
   if (localStorage.location) {
     const location = JSON.parse(localStorage.location);

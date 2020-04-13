@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { loadLocation } from '../../actions/search';
-
+import { setRemoteLocation } from '../../actions/search';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+
 // Add GoogleScipt in body tag - run after render
 function appendScript() {
   const script = document.createElement('script');
@@ -16,11 +16,9 @@ function appendScript() {
   document.body.appendChild(script);
 }
 
-const RenderMap = ({ filter, search }) => {
-  // const { radius, rate } = filter;
-
+const RenderMap = ({ filter, search, setRemoteLocation }) => {
   const { coords } = search;
-  const curLocation = { lat: coords.latitude, lng: coords.longitude };
+  var curLocation = { lat: coords.lat, lng: coords.lng };
 
   const mapRef = useRef(); // make reference to div component for map object
   var map;
@@ -35,40 +33,6 @@ const RenderMap = ({ filter, search }) => {
     marker.setMap(map);
   };
 
-  // Marker with InfoWindow to display search results
-  // const createMarker = (result) => {
-  //   var marker = new window.google.maps.Marker({
-  //     map,
-  //     position: result.geometry.location,
-  //     title: result.name,
-  //   });
-  //   var contentString =
-  //     '<div id="content">' +
-  //     '<div id="siteNotice">' +
-  //     '</div>' +
-  //     `<h1 id="firstHeading" class="firstHeading">${result.name}</h1>` +
-  //     '<div id="bodyContent">' +
-  //     `<p>Location: ${result.vicinity}</p>` +
-  //     `<p>Rating: ${result.rating}</p>` +
-  //     `<p>Price Level: ${result.price_level}</p>` +
-  //     `<p>Total Rating: ${result.user_ratings_total}</p>` +
-  //     `<img src=${result.icon} height="42" width="42">` +
-  //     '</div>' +
-  //     '</div>';
-
-  //   var infowindow = new window.google.maps.InfoWindow({
-  //     // content: `Name: ${result.name}\nLocation: ${result.vicinity}`,
-  //     content: contentString,
-  //   });
-  //   marker.addListener('click', function () {
-  //     infowindow.open(map, marker);
-  //     // unable to open one infowindow individually, resort to setTimeout instead
-  //     setTimeout(() => {
-  //       infowindow.close();
-  //     }, 3500);
-  //   });
-  // };
-
   // Callback for google script
   const initMap = () => {
     var myOptions = {
@@ -82,9 +46,33 @@ const RenderMap = ({ filter, search }) => {
       myOptions
     );
 
+    // autocomplete feature
+    var input = document.getElementById('searchInput');
+    var autocomplete = new window.google.maps.places.Autocomplete(input);
+    autocomplete.bindTo('bounds', map);
+    autocomplete.setFields(['address_components', 'geometry', 'icon', 'name']);
+
+    autocomplete.addListener('place_changed', function () {
+      var place = autocomplete.getPlace();
+      if (!place.geometry) {
+        // User entered the name of a Place that was not suggested and
+        // pressed the Enter key, or the Place Details request failed.
+        window.alert("No details available for input: '" + place.name + "'");
+        return;
+      }
+      // place.geometry
+      var locationObj = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      };
+      setRemoteLocation(locationObj);
+    });
+    // PROBLEM: PLACE.GEOMETRY.LOCATION returns FUNCTION NOT NUMBER!!!!!!!!!
+    // var curLocation = { lat: coords.lat, lng: coords.lng };
+    // console.log(typeof coords.lat);
+
     createSelfMarker(map);
 
-    // add circle
     var circle = new window.google.maps.Circle({
       strokeColor: '#424242',
       strokeOpacity: 0.2,
@@ -98,7 +86,6 @@ const RenderMap = ({ filter, search }) => {
 
     var infowindow = new window.google.maps.InfoWindow();
 
-    // search nearby places
     var request = {
       location: curLocation,
       radius: filter.radius * 1000,
@@ -187,19 +174,13 @@ const RenderMap = ({ filter, search }) => {
   };
   // appends script + set window method initMap
   const renderGMap = () => {
-    // if (!scriptAppend) {
-    //   appendScript();
-    // }
     appendScript();
     window.initMap = initMap;
   };
 
-  // **create a filterObj (radius, rating, type), reredner on filterObj change
-
   useEffect(() => {
     renderGMap();
-    // initMap
-  }, [filter.radius, filter.rate]);
+  }, [filter.radius, filter.rate, filter.type, search.coords]);
 
   return (
     // where the map is stored
@@ -221,11 +202,11 @@ const RenderMap = ({ filter, search }) => {
 RenderMap.propTypes = {
   filter: PropTypes.object.isRequired,
   search: PropTypes.object.isRequired,
-  loadLocation: PropTypes.func.isRequired,
+  setRemoteLocation: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   filter: state.filter,
   search: state.search,
 });
-export default connect(mapStateToProps, { loadLocation })(RenderMap);
+export default connect(mapStateToProps, { setRemoteLocation })(RenderMap);

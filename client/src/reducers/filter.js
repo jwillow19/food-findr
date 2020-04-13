@@ -1,8 +1,9 @@
-import { FILTER_RADIUS, FILTER_RATE } from '../actions/types';
+import { FILTER_RADIUS, FILTER_RATE, FILTER_TYPE } from '../actions/types';
 
 const initialState = {
   radius: null,
   rate: null,
+  searchType: [],
 };
 
 export default function (state = initialState, action) {
@@ -18,6 +19,22 @@ export default function (state = initialState, action) {
         ...state,
         rate: payload,
       };
+    case FILTER_TYPE:
+      if (
+        state.searchType.some((item) => {
+          return payload === item;
+        })
+      ) {
+        return {
+          ...state,
+        };
+      } else {
+        return {
+          ...state,
+          searchType: [...state.searchType, payload],
+        };
+      }
+
     default:
       return {
         ...state,

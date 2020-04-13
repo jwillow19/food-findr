@@ -1,4 +1,9 @@
-import { SEARCH_CUR, LOCATION_LOADED, SEARCH_ERR } from '../actions/types';
+import {
+  SEARCH_CUR,
+  SEARCH_REMOTE,
+  LOCATION_LOADED,
+  SEARCH_ERR,
+} from '../actions/types';
 
 const initialState = {
   isSearching: true, // set this to true when making a search
@@ -10,6 +15,7 @@ export default function (state = initialState, action) {
 
   switch (type) {
     case SEARCH_CUR:
+    case SEARCH_REMOTE:
       // set location to localStorage - stringify object before storage
       localStorage.setItem('location', JSON.stringify(payload));
       return {

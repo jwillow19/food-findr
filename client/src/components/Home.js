@@ -12,6 +12,7 @@ import Container from '@material-ui/core/Container';
 import { setLocation } from '../actions/search';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
+import TextField from '@material-ui/core/TextField';
 
 const theme = createMuiTheme({
   palette: {
@@ -64,7 +65,7 @@ const Home = ({ setLocation, search }) => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component='h1' variant='h5'>
-            {'Decide on where to eat made easy'}
+            {'Where to eat made easy'}
           </Typography>
           <form className={classes.form} noValidate>
             <Button
@@ -78,30 +79,12 @@ const Home = ({ setLocation, search }) => {
               {'Search current location'}
             </Button>
 
-            <Button
-              type='submit'
-              href='/remote'
-              fullWidth
-              variant='contained'
-              className={classes.submit}
-            >
-              {'Remote Search'}
-            </Button>
-
-            {/* {!isSearching ? (
-            //   <div>
-            //     <p>lat: {coords.latitude}</p>
-            //     <p>long: {coords.longitude}</p>
-            //   </div>
-            // ) : (
-            //   <p>nothing</p>
-            // )}*/}
-
-            <Grid container>
-              <Grid item>
-                <Link to='/signup'>{"Don't have an account? Sign Up"}</Link>
-              </Grid>
-            </Grid>
+            <TextField
+              id='outlined-basic'
+              label='Remote search'
+              variant='outlined'
+              fullWidth='true'
+            />
           </form>
         </div>
       </Container>

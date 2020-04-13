@@ -7,15 +7,19 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import AdjustIcon from '@material-ui/icons/Adjust';
 import StarIcon from '@material-ui/icons/Star';
+import LocationSearchingIcon from '@material-ui/icons/LocationSearching';
 
-import { filterRadius, filterRate } from '../../actions/filter';
+import { filterRadius, filterRate, filterType } from '../../actions/filter';
 
-const FilterList = ({ filterRadius, filterRate }) => {
+const FilterList = ({ filterRadius, filterRate, filterType }) => {
   const [radius, setRadius] = useState({
     radiusIsSelect: null,
   });
   const [rating, setRating] = useState({
     ratingIsSelect: null,
+  });
+  const [type, setType] = useState({
+    typeIsSelect: null,
   });
 
   // set state to true onClick. reset state to null & save selected menuitem to object onClose
@@ -49,6 +53,19 @@ const FilterList = ({ filterRadius, filterRate }) => {
     // console.log(refineSearch);
   };
 
+  const handleTypeClick = (e) => {
+    setType({
+      typeIsSelect: e.currentTarget,
+    });
+  };
+
+  const handleTypeClose = (item) => {
+    setType({
+      typeIsSelect: null,
+    });
+    filterType(item);
+  };
+
   // // an object with all filtered values to be pass onto action
   // let refineSearch = {
   //   radius: null,
@@ -56,14 +73,14 @@ const FilterList = ({ filterRadius, filterRate }) => {
   // };
   const radiusList = [5, 10, 20];
   const ratingList = [1, 2, 3, 4, 5];
-  // <MenuItem onClick={handleRadiusClose}>5 km</MenuItem>
-  //         <MenuItem onClick={handleRadiusClose}>10 km</MenuItem>
-  // //         <MenuItem onClick={handleRadiusClose}>20 km</MenuItem>
-  // <MenuItem onClick={handleRatingClose}>1 star</MenuItem>
-  //       <MenuItem onClick={handleRatingClose}>2 stars</MenuItem>
-  //       <MenuItem onClick={handleRatingClose}>3 stars</MenuItem>
-  //       <MenuItem onClick={handleRatingClose}>4 stars</MenuItem>
-  //       <MenuItem onClick={handleRatingClose}>5 stars</MenuItem>
+  const typesList = [
+    'bar',
+    'cafe',
+    'meal_delivery',
+    'meal_takeaway',
+    'night_club',
+    'restaurant',
+  ];
 
   return (
     <Fragment>
@@ -122,6 +139,34 @@ const FilterList = ({ filterRadius, filterRate }) => {
           ))}
         </Menu>
       </div>
+
+      <div>
+        <ListItem
+          button
+          aria-owns='types-menu'
+          aria-controls='types-menu'
+          aria-haspopup='true'
+          onClick={handleTypeClick}
+        >
+          <ListItemIcon>
+            <LocationSearchingIcon />
+          </ListItemIcon>
+          <ListItemText primary='Type' />
+        </ListItem>
+        <Menu
+          id='types-menu'
+          anchorEl={type.typeIsSelect}
+          keepMounted
+          open={Boolean(type.typeIsSelect)}
+          onClose={handleTypeClose}
+        >
+          {typesList.map((type) => (
+            <MenuItem key={type} onClick={() => handleTypeClose(type)}>
+              {type}
+            </MenuItem>
+          ))}
+        </Menu>
+      </div>
     </Fragment>
   );
 };
@@ -133,4 +178,6 @@ const FilterList = ({ filterRadius, filterRate }) => {
 // const mapStateToProps = state => ({
 //     filter: state.filter
 // })
-export default connect(null, { filterRadius, filterRate })(FilterList);
+export default connect(null, { filterRadius, filterRate, filterType })(
+  FilterList
+);
